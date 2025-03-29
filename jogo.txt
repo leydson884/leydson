@@ -1,0 +1,121 @@
+import React, { useState, useEffect } from "react";
+import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import database from "@react-native-firebase/database";
+
+// Parâmetros de validação
+const MAX_XP_PER_ACTION = 50;
+const MAX_LEVEL = 100;
+
+// Função de validação simples
+const isValidXPChange = (currentXP, newXP) => {
+  // Verifica se a mudança de XP é plausível (não pode ser maior que MAX_XP_PER_ACTION)
+  return newXP - currentXP <= MAX_XP_PER_ACTION;
+};
+
+const isValidLevelUp = (level) => {
+  // Não permite que o jogador ultrapasse o nível máximo
+  return level <= MAX_LEVEL;
+};
+
+export default function App() {
+  const [username, setUsername] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [xp, setXp] = useState(0);
+  const [level, setLevel] = useState(1);
+  const [resets, setResets] = useState(0);
+  const [power, setPower] = useState(1);
+  const [health, setHealth] = useState(100);
+
+  useEffect(() => {
+    if (loggedIn) {
+      const playerRef = database().ref(`/players/${username}`);
+      playerRef.set({ position, xp, level, resets, power, health });
+      playerRef.onDisconnect().remove();
+    }
+  }, [loggedIn, position, xp, level, resets, power, health]);
+
+  const handleLogin = () => {
+    if (username.trim()) {
+      setLoggedIn(true);
+    }
+  };
+
+  const handleXPChange = (newXP) => {
+    // Valida se a mudança de XP é legítima
+    if (!isValidXPChange(xp, newXP)) {
+      Alert.alert("Erro de Validação", "Mudança de XP inválida!");
+      return;
+    }
+    setXp(newXP);
+  };
+
+  const handleLevelUp = () => {
+    // Valida se o nível é válido antes de permitir o aumento
+    if (!isValidLevelUp(level + 1)) {
+      Alert.alert("Erro de Validação", "Você não pode ultrapassar o nível máximo!");
+      return;
+    }
+    setLevel(level + 1);
+  };
+
+  const handleCheatDetection = () => {
+    // Detecção simples de trapaças
+    if (xp > 1000) {
+      Alert.alert("Alerta de Trapaça", "XP excessivo detectado!");
+      // Você pode também enviar o jogador para uma tela de banimento ou resetar o estado
+    }
+
+    if (health <= 0) {
+      Alert.alert("Alerta de Trapaça", "Valor de vida inválido detectado!");
+      setHealth(100); // Reseta a vida do jogador para um valor válido
+    }
+  };
+
+  useEffect(() => {
+    // Checa periodicamente o estado do jogo para detectar trapaças
+    handleCheatDetection();
+  }, [xp, health]);
+
+  return (
+    <View style={styles.container}>
+      {!loggedIn ? (
+        <View style={styles.loginContainer}>
+          <Text style={styles.title}>Bem-vindo ao Jogo!</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Digite seu nome"
+            onChangeText={setUsername}
+            value={username}
+          />
+          <Button title="Entrar" onPress={handleLogin} />
+        </View>
+      ) : (
+        <View style={styles.gameContainer}>
+          <Text style={styles.gameText}>Bem-vindo, {username}!</Text>
+          <Text style={styles.levelText}>Nível: {level} | XP: {xp}</Text>
+          <Text style={styles.levelText}>Poder: {power}</Text>
+          <Text style={styles.levelText}>Vida: {health}</Text>
+
+          <Button title="Ganhar XP" onPress={() => handleXPChange(xp + 10)} />
+          <Button title="Subir de Nível" onPress={handleLevelUp} />
+          <Button title="Resetar" onPress={() => setLevel(1)} />
+
+          <Button title="Checar Integridade" onPress={handleCheatDetection} />
+        </View>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#222" },
+  levelText: { fontSize: 16, color: "white", marginTop: 5 },
+  button: { backgroundColor: "#444", padding: 10, margin: 5, borderRadius: 5 },
+  buttonText: { fontSize: 20, color: "white" },
+  gameText: { color: "white", fontSize: 20 },
+  input: { height: 40, borderColor: "gray", borderWidth: 1, marginBottom: 10, padding: 10, width: "80%", color: "white" },
+  title: { fontSize: 24, marginBottom: 20, color: "white" },
+  loginContainer: { justifyContent: "center", alignItems: "center" },
+  gameContainer: { alignItems: "center" },
+});
