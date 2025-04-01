@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cassino Online - Estilo Stake</title>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0f0f0f;
+            color: white;
+            text-align: center;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #181818;
+            padding: 15px 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+        .menu {
+            display: flex;
+            gap: 20px;
+        }
+        .menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .menu a:hover {
+            color: #ffcc00;
+        }
+        .container {
+            padding: 60px 20px;
+        }
+        .game-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .game {
+            background: #222;
+            padding: 20px;
+            border-radius: 8px;
+            width: 220px;
+            text-align: center;
+        }
+        .game img {
+            width: 100%;
+            border-radius: 5px;
+        }
+        button {
+            background: #ffcc00;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #e6b800;
+        }
+        .pix-container {
+            margin-top: 40px;
+            background: #181818;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        .pix-container input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        #qrcode {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #222;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">L884 Cassino</div>
+        <nav class="menu">
+            <a href="#">Início</a>
+            <a href="#">Jogos</a>
+            <a href="#">Promoções</a>
+            <a href="#">Entrar</a>
+        </nav>
+    </header>
+    <div class="container">
+        <h1>Bem-vindo ao L884 Cassino</h1>
+        <p>Aposte com segurança e divirta-se!</p>
+        <h2>Jogos Disponíveis</h2>
+        <div class="game-list">
+            <div class="game">
+                <img src="https://via.placeholder.com/200" alt="Roleta">
+                <h3>Roleta</h3>
+                <button onclick="jogar('Roleta')">Jogar</button>
+            </div>
+            <div class="game">
+                <img src="https://via.placeholder.com/200" alt="Blackjack">
+                <h3>Blackjack</h3>
+                <button onclick="jogar('Blackjack')">Jogar</button>
+            </div>
+            <div class="game">
+                <img src="https://via.placeholder.com/200" alt="Pôquer">
+                <h3>Pôquer</h3>
+                <button onclick="jogar('Pôquer')">Jogar</button>
+            </div>
+            <div class="game">
+                <img src="https://via.placeholder.com/200" alt="Caça-níqueis">
+                <h3>Caça-níqueis</h3>
+                <button onclick="jogar('Caça-níqueis')">Jogar</button>
+            </div>
+        </div>
+        
+        <h2>Pagamento via Pix</h2>
+        <div class="pix-container">
+            <p>Faça um depósito via Pix para começar a jogar!</p>
+            <input type="text" value="chave-pix-exemplo@banco.com" readonly>
+            <button onclick="copiarPix()">Copiar Chave Pix</button>
+        </div>
+
+        <!-- QR Code do Pix -->
+        <div id="qrcode"></div>
+    </div>
+
+    <script>
+        function jogar(jogo) {
+            alert("Você escolheu jogar " + jogo + "! Em breve disponível.");
+        }
+        
+        function copiarPix() {
+            var inputPix = document.querySelector('.pix-container input');
+            inputPix.select();
+            document.execCommand('copy');
+            alert("Chave Pix copiada!");
+        }
+
+        // Gerar QR Code com a chave Pix
+        var chavePix = "chave-pix-exemplo@banco.com";
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: chavePix,
+            width: 128,
+            height: 128,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.L
+        });
+    </script>
+</body>
+</html>
